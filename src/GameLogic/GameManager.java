@@ -56,14 +56,36 @@ public class GameManager {
     }
 
     private void manageEquipment() {
+        if (mainCharacter.getCurrentBagSize() > 0) {
+            mainCharacter.printEquipment();
+            printLootBag();
+            System.out.println((mainCharacter.getCurrentBagSize()+1) + ") Exit");
 
+            int selection = UserInput.getUserInput();
+            if (selection <= mainCharacter.getCurrentBagSize()) {
+                printEquipmentOptions(selection);
+            }
+        } else {
+            System.out.println("No items to manage, returning to menu");
+        }
+    }
+
+    private void printEquipmentOptions(int selection) {
+        mainCharacter.printBagItem(selection - 1);
+        System.out.println("1) Equip \n2) Drop \n3) Return To Equipment");
+        int newSelection = UserInput.getUserInput();
+        if(newSelection == 1){
+            mainCharacter.swapEquipment(selection -1);
+        } else if(newSelection == 2) {
+            mainCharacter.removeItem(selection-1);
+        }
     }
 
     private void manageAttributes() {
 
     }
 
-    private void printLootBag(){
+    private void printLootBag() {
         mainCharacter.printItems();
     }
 

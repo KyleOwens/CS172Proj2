@@ -14,4 +14,8 @@ public class Armor extends Equipment {
     public static Armor makeRandomArmor(int maxArmor){
         return new Armor(maxArmor);
     }
+
+//    public String toString(){
+//        return "Armor: [Level Requirement: " + this.getLevelRequirement() + "  Armor: " + this.getStat() + "]"
+//    }
 }

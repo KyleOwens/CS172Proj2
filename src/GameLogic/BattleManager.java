@@ -83,6 +83,7 @@ public class BattleManager {
             }
 
             enemyTurn();
+            checkforCharacterDeath();
         }
     }
 
@@ -105,7 +106,7 @@ public class BattleManager {
     private void printCharacterOptionMenu() {
         System.out.println("\nBattle Options:");
         printBattleInfo();
-        System.out.println("1) Attack \n2) Special \n3) Flee");
+        System.out.println("1) Attack \n2) FriendlySpecial \n3) Flee");
     }
 
     private void printBattleInfo() {
@@ -145,6 +146,22 @@ public class BattleManager {
     }
 
     private void useSpecial() {
+        System.out.println("\nYour MP: " + mainCharacter.getMp());
+        System.out.println("1) Attack All(10mp) \n2) Heal Self (5mp)\n3)Return to other options");
+        int selection = UserInput.getUserInput();
+        if(selection == 1){
+            if(!mainCharacter.attackAll(enemies)){
+                System.out.println("The spell cast failed, you didn't have enough mana!");
+                mainCharacterTurn();
+            }
+        } else if (selection == 2){
+            if(!mainCharacter.healSelf()){
+                System.out.println("The spell cast failed, you didn't have enough mana!");
+                mainCharacterTurn();
+            }
+        } else {
+            mainCharacterTurn();
+        }
     }
 
     private void checkForEnemyDeaths() {
@@ -167,6 +184,13 @@ public class BattleManager {
         }
     }
 
+    private void checkforCharacterDeath(){
+        if(mainCharacter.getHp() <= 0){
+            System.out.println("You have died!! --- GAME OVER");
+            System.exit(0);
+        }
+    }
+
     private boolean isBattleComplete() {
         if (enemies.size() == 0) {
             return true;
@@ -185,7 +209,7 @@ public class BattleManager {
         for(int i = 0; i < loot.size(); i++){
             System.out.println("\nWould you like to take this item --");
             System.out.println("[Level Requirement: " + loot.get(i).getLevelRequirement() + "] ["
-                    + loot.get(i).getItemSlot() + ": " + loot.get(i).getStat());
+                    + loot.get(i).getItemSlot() + ": " + loot.get(i).getStat() + "]");
 
             System.out.println("1) Yes");
             System.out.println("2) No");

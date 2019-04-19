@@ -2,6 +2,7 @@ package Characters;
 
 public abstract class Character {
     private int hp;
+    private int maxHp;
     private int power;
     private int defense;
 
@@ -27,6 +28,14 @@ public abstract class Character {
 
     public void setDefense(int defense) {
         this.defense = defense;
+    }
+
+    public int getMaxHp() {
+        return maxHp;
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
     }
 
     public abstract void attack(Character character);

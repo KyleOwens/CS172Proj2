@@ -9,8 +9,11 @@ public class Enemy extends Character{
     private boolean loot;
 
     public Enemy(int maxHp, int maxPower){
-        this.setHp(random.nextInt(maxHp) + 1);
+        int hp = random.nextInt(maxHp) + 1;
+        this.setHp(hp);
+        this.setMaxHp(hp);
         this.setPower(random.nextInt(maxPower) + 1);
+
         this.awardExp = this.getHp() + this.getPower();
         this.awardGold = this.getPower()*10;
         this.loot = random.nextBoolean();
