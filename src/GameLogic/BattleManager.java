@@ -2,55 +2,93 @@ package GameLogic;
 
 import Characters.Enemy;
 import Characters.MainCharacter;
+import Equipment.Armor;
+import Equipment.Equipment;
+import Equipment.Weapon;
+import UserInput.UserInput;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
+
 
 public class BattleManager {
     private static boolean battleState = true;
+    private int possibleExperience;
 
     private MainCharacter mainCharacter;
     private ArrayList<Enemy> enemies;
+    private ArrayList<Equipment> loot;
 
-    private Random random = new Random();
-    private Scanner scanner;
+    private Random random;
 
 
-    public BattleManager(MainCharacter mainCharacter, Scanner scanner) {
+    public BattleManager(MainCharacter mainCharacter) {
         this.mainCharacter = mainCharacter;
         this.random = new Random();
-        this.scanner = scanner;
         this.enemies = new ArrayList();
+        this.loot = new ArrayList();
     }
 
     public void startNewBattle() {
         createEnemies();
-        while (battleState) {
-            mainCharacterTurn();
-            checkForEnemyDeaths();
-
-            if(isBattleComplete()){
-                endBattle();
-            }
-            enemyTurn();
-        }
-
+        generateLootTable();
+        calculatePossibleExp();
+        runBattle();
     }
 
     private void createEnemies() {
         int enemyCount = random.nextInt(5) + 1;
-
         this.enemies.clear();
 
         for (int i = 0; i < enemyCount; i++) {
             this.enemies.add(Enemy.createRandomEnemy(50, 10));
         }
+
+        battleState = true;
+    }
+
+    //968-ymb
+    private void generateLootTable(){
+        this.loot.clear();
+        for (int i = 0; i < enemies.size(); i++) {
+            if(enemies.get(i).hasLoot()){
+                addLootToTable();
+            }
+        }
+    }
+
+    private void addLootToTable(){
+        int type = random.nextInt(2);
+        if(type == 1){
+            loot.add(Armor.makeRandomArmor((mainCharacter.getLevel() + 5) * 5));
+        } else {
+            loot.add(Weapon.makeRandomWeapon((mainCharacter.getLevel() + 5) * 5));
+        }
+    }
+
+    private void calculatePossibleExp() {
+        this.possibleExperience = 0;
+        for (int i = 0; i < enemies.size(); i++) {
+            possibleExperience += enemies.get(i).getAwardExp();
+        }
+    }
+
+    private void runBattle(){
+        while (battleState) {
+            mainCharacterTurn();
+            checkForEnemyDeaths();
+
+            if (isBattleComplete()) {
+                endBattle();
+            }
+
+            enemyTurn();
+        }
     }
 
     private void mainCharacterTurn() {
         printCharacterOptionMenu();
-        int selection = getUserInput();
+        int selection = UserInput.getUserInput();
 
         switch (selection) {
             case 2:
@@ -80,9 +118,14 @@ public class BattleManager {
     }
 
     private void attackEnemy() {
-        printEnemies();
-        int selection = getUserInput();
-        this.mainCharacter.attack(enemies.get(selection - 1));
+        if(enemies.size() > 1){
+            printEnemies();
+            int selection = UserInput.getUserInput();
+            this.mainCharacter.attack(enemies.get(selection - 1));
+        } else {
+            this.mainCharacter.attack(enemies.get(0));
+        }
+
     }
 
     private void printEnemies() {
@@ -94,7 +137,7 @@ public class BattleManager {
 
     private void attemptToFlee() {
         if (random.nextInt(2) == 0) {
-            System.out.println("You have successfull fled the battle");
+            System.out.println("You have successfully fled the battle");
             battleState = false;
         } else {
             System.out.println("You were not able to leave the battle!");
@@ -105,9 +148,9 @@ public class BattleManager {
     }
 
     private void checkForEnemyDeaths() {
-        for (int i = enemies.size(); i >= 0; i--){
-            if(enemies.get(i).getHp() <= 0){
-                System.out.println("Enemy " + i + "has died");
+        for (int i = enemies.size()-1; i >= 0; i--) {
+            if (enemies.get(i).getHp() <= 0) {
+                System.out.println("Enemy " + (i+1) + " has died");
                 enemies.remove(i);
             }
         }
@@ -116,28 +159,46 @@ public class BattleManager {
     private void enemyTurn() {
         for (int i = 0; i < enemies.size(); i++) {
             if (random.nextInt(10) + 1 >= enemies.size()) {
-                System.out.println("Enemy " + i + " hits you for " + enemies.get(i).getPower());
+                System.out.println("Enemy " + (i+1) + " hits you for " + enemies.get(i).getPower());
                 enemies.get(i).attack(mainCharacter);
             } else {
-                System.out.println("Enemy " + i + " missed!");
+                System.out.println("Enemy " + (i+1) + " missed!");
             }
         }
     }
 
-    private boolean isBattleComplete(){
-        if(enemies.size() == 0){
+    private boolean isBattleComplete() {
+        if (enemies.size() == 0) {
             return true;
         }
         return false;
     }
 
-    private void endBattle(){
+    private void endBattle() {
+        battleState = false;
+        System.out.println("\nYOU ARE VICTORIOUS");
         awardExperience();
-        rollLootTable();
-
+        offerLoot();
     }
 
-    private int getUserInput() {
-        return Integer.parseInt(this.scanner.nextLine());
+    private void offerLoot(){
+        for(int i = 0; i < loot.size(); i++){
+            System.out.println("\nWould you like to take this item --");
+            System.out.println("[Level Requirement: " + loot.get(i).getLevelRequirement() + "] ["
+                    + loot.get(i).getItemSlot() + ": " + loot.get(i).getStat());
+
+            System.out.println("1) Yes");
+            System.out.println("2) No");
+            int selection = UserInput.getUserInput();
+
+            if(selection == 1){
+                mainCharacter.addItemToBag(loot.get(i));
+            }
+        }
     }
+
+    private void awardExperience() {
+        mainCharacter.addExperience(possibleExperience);
+    }
+
 }

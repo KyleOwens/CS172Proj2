@@ -1,32 +1,29 @@
 package GameLogic;
 
 import Characters.MainCharacter;
-
-import java.util.Scanner;
+import UserInput.UserInput;
 
 public class GameManager {
     private MainCharacter mainCharacter;
-    private Scanner scanner;
     private int menuSelection = 0;
     private BattleManager battleManager;
 
-    public GameManager(){
-        this.mainCharacter = MainCharacter.createCharacterWithStats(100,20);
+    public GameManager() {
+        this.mainCharacter = MainCharacter.createCharacterWithStats(100, 20);
     }
 
-    public GameManager(MainCharacter mainCharacter){
+    public GameManager(MainCharacter mainCharacter) {
         this.mainCharacter = mainCharacter;
     }
 
-    public void startGame(){
-        scanner = new Scanner(System.in);
-        battleManager = new BattleManager(mainCharacter, scanner);
+    public void startGame() {
+        battleManager = new BattleManager(mainCharacter);
 
-        while(menuSelection != 4){
+        while (menuSelection != 5) {
             printOptions();
-            menuSelection = getUserInput();
+            menuSelection = UserInput.getUserInput();
 
-            switch(menuSelection){
+            switch (menuSelection) {
                 case 1:
                     beginBattle();
                     break;
@@ -36,8 +33,11 @@ public class GameManager {
                 case 3:
                     manageAttributes();
                     break;
+                case 4:
+                    printLootBag();
+                    break;
                 default:
-                    if(menuSelection != 4){
+                    if (menuSelection != 5) {
                         System.out.println("Your selection is invalid, please try again!");
                     }
 
@@ -45,27 +45,26 @@ public class GameManager {
         }
 
 
-
     }
 
-    private void printOptions(){
-        System.out.println("\n" + this.mainCharacter + "\n1) Enter Battle \n2) Manage Equipment\n3) Manage Attributes\n4) Exit Game");
+    private void printOptions() {
+        System.out.println("\n" + this.mainCharacter + "\n1) Enter Battle \n2) Manage Equipment\n3) Manage Attributes\n4) Print Loot Bag\n5) Exit");
     }
 
-    private int getUserInput(){
-        return Integer.parseInt(this.scanner.nextLine());
-    }
-
-    private void beginBattle(){
+    private void beginBattle() {
         battleManager.startNewBattle();
     }
 
-    private void manageEquipment(){
+    private void manageEquipment() {
 
     }
 
-    private void manageAttributes(){
+    private void manageAttributes() {
 
+    }
+
+    private void printLootBag(){
+        mainCharacter.printItems();
     }
 
 }
