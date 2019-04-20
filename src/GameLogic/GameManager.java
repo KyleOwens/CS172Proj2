@@ -91,47 +91,50 @@ public class GameManager {
         printAttributeOptions();
         int selection = UserInput.getUserInput();
 
-        System.out.println("\nHow many points to use?");
-        int amount = UserInput.getUserInput();
+        if (selection < 4) {
+            System.out.println("\nHow many points to use?");
+            int amount = UserInput.getUserInput();
 
-        if (amount > mainCharacter.getCurrentAttributes()) {
-            amount = mainCharacter.getCurrentAttributes();
-        }
+            if (amount > mainCharacter.getCurrentAttributes()) {
+                amount = mainCharacter.getCurrentAttributes();
+            }
 
-        if (selection == 1) {
-            mainCharacter.raiseMaxHP(amount);
-            mainCharacter.lowerAttributePoints(amount);
-        } else if (selection == 2) {
-            mainCharacter.raiseMaxPower(amount);
-            mainCharacter.lowerAttributePoints(amount);
-        } else if (selection == 3) {
-            mainCharacter.raiseMaxMP(amount);
-            mainCharacter.lowerAttributePoints(amount);
+
+            if (selection == 1) {
+                mainCharacter.raiseMaxHP(amount);
+                mainCharacter.lowerAttributePoints(amount);
+            } else if (selection == 2) {
+                mainCharacter.raiseMaxPower(amount);
+                mainCharacter.lowerAttributePoints(amount);
+            } else if (selection == 3) {
+                mainCharacter.raiseMaxMP(amount);
+                mainCharacter.lowerAttributePoints(amount);
+            }
         }
     }
 
     private void printAttributeOptions() {
-        System.out.println("\nCurrent Attribute Points: " + mainCharacter.getCurrentAttributes() + "\n1) Raise Max HP\n2) Raise Max Power\n3)Raise Max MP \n4) Exit");
+        System.out.println("\nCurrent Attribute Points: " + mainCharacter.getCurrentAttributes() + "\n1) Raise Max HP\n2) Raise Max Power\n3) Raise Max MP \n4) Exit");
     }
 
     private void printLootBag() {
         mainCharacter.printItems();
     }
 
-    private void openShop(){
+    private void openShop() {
         printShopOptions();
         int selection = UserInput.getUserInput();
 
-        if(selection == 1){
-            if(mainCharacter.getCurrentGold() > 200){
+        if (selection == 1) {
+            if (mainCharacter.getCurrentGold() > 200) {
                 mainCharacter.setMp(mainCharacter.getMaxMp());
                 mainCharacter.subtractGold(200);
             } else {
                 System.out.println("You can't afford that!");
                 openShop();
             }
-        } else if(selection == 2){
-            if(mainCharacter.getCurrentGold() > 500){
+        } else if (selection == 2) {
+            if (mainCharacter.getCurrentGold() > 500) {
                 mainCharacter.setHp(mainCharacter.getMaxHp());
                 mainCharacter.subtractGold(500);
             } else {
@@ -141,7 +144,7 @@ public class GameManager {
         }
     }
 
-    private void printShopOptions(){
+    private void printShopOptions() {
         System.out.println("\nCurrent Gold: " + mainCharacter.getCurrentGold());
         System.out.println("1) Replenish MP - 200 Gold");
         System.out.println("2) Replenish HP - 500 Gold");
