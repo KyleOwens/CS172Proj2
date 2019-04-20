@@ -4,18 +4,22 @@ import Equipment.Armor;
 import Equipment.Equipment;
 import Equipment.Weapon;
 import UserInput.UserInput;
-import javafx.scene.Parent;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainCharacter extends Character {
     private Weapon weapon;
     private Armor armor;
+    private LootBag lootBag;
+    private Random random;
+
     private int experience = 0;
     private int level = 1;
-    private LootBag lootBag;
     private int mp;
     private int maxMp;
+    private int currentGold;
+    private int currentAttributes;
 
 
     private MainCharacter(int hp, int power) {
@@ -25,7 +29,9 @@ public class MainCharacter extends Character {
         this.lootBag = new LootBag(5);
         this.mp = 20;
         this.maxMp = 20;
-
+        this.currentGold = 0;
+        this.currentAttributes = 0;
+        this.random = new Random();
     }
 
     public static MainCharacter createCharacterWithStats(int hp, int power) {
@@ -34,13 +40,51 @@ public class MainCharacter extends Character {
 
     @Override
     public void attack(Character character) {
-        int hit = this.getPower();
-        character.setHp(character.getHp() - hit);
+        character.setHp(character.getHp() - calculateHit());
     }
 
-    public int getLevel() {
-        return level;
+    private int calculateHit() {
+        int hit = this.getPower();
+        if (weapon != null) {
+            hit += weapon.getStat();
+        }
+
+        hit = rollCriticalHit(hit);
+
+        return hit;
     }
+
+    private int rollCriticalHit(int hit){
+        int critical = random.nextInt(10);
+
+        if(critical <=1){
+            hit *= 1.5;
+            System.out.println("Critical Hit!");
+        }
+
+        return hit;
+    }
+
+    public void raiseMaxHP(int amount){
+        this.setMaxHp(this.getMaxHp() + amount);
+    }
+
+    public void raiseMaxPower(int amount){
+        this.setPower(this.getPower() + amount);
+    }
+
+    public void raiseMaxMP(int amount){
+        this.maxMp += amount;
+    }
+
+    public void addGold(int gold) {
+        this.currentGold += gold;
+    }
+
+    public void lowerAttributePoints(int amount){
+        this.currentAttributes -= amount;
+    }
+
 
     public void addExperience(int experience) {
         this.experience += experience;
@@ -50,7 +94,7 @@ public class MainCharacter extends Character {
     private void checkForLevelUp() {
         while (experience >= ((level + 1) * 200)) {
             level++;
-            System.out.println(experience + "  " + (level+1)*200);
+            this.currentAttributes += 5;
             System.out.println("\n************* \nLevel Up! - Your level: " + this.level + "\n*************");
         }
     }
@@ -61,6 +105,108 @@ public class MainCharacter extends Character {
 
     public void printItems() {
         lootBag.listItems();
+    }
+
+
+    public void printEquipment() {
+        if (armor == null) {
+            System.out.println("\nCurrent Armor: none");
+        } else {
+            System.out.println("\nCurrent Armor: " + armor);
+        }
+
+        if (weapon == null) {
+            System.out.println("Current Weapon: none");
+        } else {
+            System.out.println("Current Weapon: " + weapon);
+        }
+
+    }
+
+    public boolean healSelf() {
+        if (mp >= 5) {
+            if (this.getHp() + 20 < this.getMaxHp()) {
+                this.setHp(this.getHp() + 30);
+            } else {
+                this.setHp(this.getMaxHp());
+            }
+            this.mp -= 5;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean attackAll(ArrayList<Enemy> enemies) {
+        if (mp >= 10) {
+            this.mp -= 10;
+            for (int i = 0; i < enemies.size(); i++) {
+                enemies.get(i).setHp((int) (enemies.get(i).getHp() - (calculateHit() * .75)));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public int getCurrentBagSize() {
+        return lootBag.getAmountOfItmes();
+    }
+
+    public void printBagItem(int selection) {
+        lootBag.printBagItem(selection);
+    }
+
+    public void removeItem(int selection) {
+        lootBag.removeItem(selection);
+    }
+
+    public boolean swapEquipment(int selection) {
+        Equipment newEquip = lootBag.retrieveItem(selection);
+        if (newEquip.getLevelRequirement() <= this.level) {
+            if (newEquip instanceof Armor) {
+                if (this.armor == null) {
+                    lootBag.removeItem(selection);
+                    this.armor = (Armor) newEquip;
+                    return true;
+                } else {
+                    lootBag.removeItem(selection);
+                    lootBag.addItem(this.armor);
+                    this.armor = (Armor) newEquip;
+                    return true;
+                }
+            }
+
+            if (newEquip instanceof Weapon) {
+                if (this.weapon == null) {
+                    lootBag.removeItem(selection);
+                    this.weapon = (Weapon) newEquip;
+                    return true;
+                } else {
+                    lootBag.removeItem(selection);
+                    lootBag.addItem(this.weapon);
+                    this.weapon = (Weapon) newEquip;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public int getCurrentGold() {
+        return currentGold;
+    }
+
+    public void subtractGold(int amount){
+        this.currentGold -= amount;
+    }
+
+    public int getCurrentAttributes() {
+        return currentAttributes;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public int getMp() {
@@ -95,101 +241,24 @@ public class MainCharacter extends Character {
         this.armor = armor;
     }
 
-    public void printEquipment(){
-        if(armor == null){
-            System.out.println("\nCurrent Armor: none");
-        } else {
-            System.out.println("\nCurrent Armor: " + armor);
-        }
-
-        if(weapon == null){
-            System.out.println("Current Weapon: none");
-        } else {
-            System.out.println("Current Weapon: " + weapon);
-        }
-
-    }
-
-    public boolean healSelf(){
-        if(mp >= 5){
-            if(this.getHp() + 20 < this.getMaxHp()){
-                this.setHp(this.getHp() + 20);
-            } else {
-                this.setHp(this.getMaxHp());
-            }
-            this.mp -= 5;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean attackAll(ArrayList<Enemy> enemies){
-        if(mp >= 10){
-            this.mp -= 10;
-            for(int i = 0; i < enemies.size(); i++){
-                enemies.get(i).setHp(enemies.get(i).getHp() - (this.getPower())/2);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public int getCurrentBagSize(){
-          return lootBag.getAmountOfItmes();
-    }
-
-    public void printBagItem(int selection){
-        lootBag.printBagItem(selection);
-    }
-
-    public void removeItem(int selection){
-        lootBag.removeItem(selection);
-    }
-
-    public void swapEquipment(int selection){
-        Equipment newEquip = lootBag.retrieveItem(selection);
-        if(newEquip instanceof Armor){
-            if(this.armor == null){
-                lootBag.removeItem(selection);
-                this.armor = (Armor) newEquip;
-            } else {
-                lootBag.removeItem(selection);
-                lootBag.addItem(this.armor);
-                this.armor = (Armor) newEquip;
-            }
-        }
-
-        if(newEquip instanceof Weapon){
-            if(this.weapon == null){
-                lootBag.removeItem(selection);
-                this.weapon = (Weapon) newEquip;
-            } else {
-                lootBag.removeItem(selection);
-                lootBag.addItem(this.weapon);
-                this.weapon = (Weapon) newEquip;
-            }
-        }
-    }
-
 
     @Override
     public String toString() {
         String armor;
         String weapon;
-        if(this.armor == null){
+        if (this.armor == null) {
             armor = "   Armor: 0";
         } else {
             armor = "   Armor: " + this.armor.getStat();
         }
 
-        if(this.weapon == null){
+        if (this.weapon == null) {
             weapon = "   Weapon: 0";
         } else {
             weapon = "   Weapon: " + this.weapon.getStat();
         }
         return "Your Characters Current Stats:  HP: " + this.getHp() + "   Power: "
-                + this.getPower() + "   MP: " + this.mp + armor + weapon;
+                + this.getPower() + "   MP: " + this.mp + armor + weapon + "   Gold: " + currentGold;
     }
 
 
@@ -210,15 +279,15 @@ public class MainCharacter extends Character {
             }
         }
 
-        public void removeItem(int selection){
+        public void removeItem(int selection) {
             items.remove(selection);
         }
 
-        public void printBagItem(int selection){
+        public void printBagItem(int selection) {
             System.out.println(items.get(selection));
         }
 
-        public Equipment retrieveItem(int selection){
+        public Equipment retrieveItem(int selection) {
             return items.get(selection);
         }
 
@@ -234,7 +303,7 @@ public class MainCharacter extends Character {
         }
 
         private void listItems() {
-            if(items.size() > 0){
+            if (items.size() > 0) {
                 for (int i = 0; i < items.size(); i++) {
                     System.out.println((i + 1) + ") " + items.get(i));
                 }
@@ -244,7 +313,7 @@ public class MainCharacter extends Character {
 
         }
 
-        private int getAmountOfItmes(){
+        private int getAmountOfItmes() {
             return items.size();
         }
 

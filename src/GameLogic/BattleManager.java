@@ -14,6 +14,7 @@ import java.util.Random;
 public class BattleManager {
     private static boolean battleState = true;
     private int possibleExperience;
+    private int possibleGold;
 
     private MainCharacter mainCharacter;
     private ArrayList<Enemy> enemies;
@@ -32,7 +33,7 @@ public class BattleManager {
     public void startNewBattle() {
         createEnemies();
         generateLootTable();
-        calculatePossibleExp();
+        calculatePossibleRewards();
         runBattle();
     }
 
@@ -66,10 +67,12 @@ public class BattleManager {
         }
     }
 
-    private void calculatePossibleExp() {
+    private void calculatePossibleRewards() {
         this.possibleExperience = 0;
+        this.possibleGold = 0;
         for (int i = 0; i < enemies.size(); i++) {
             possibleExperience += enemies.get(i).getAwardExp();
+            possibleGold += enemies.get(i).getAwardGold();
         }
     }
 
@@ -83,7 +86,7 @@ public class BattleManager {
             }
 
             enemyTurn();
-            checkforCharacterDeath();
+            checkForCharacterDeath();
         }
     }
 
@@ -106,7 +109,7 @@ public class BattleManager {
     private void printCharacterOptionMenu() {
         System.out.println("\nBattle Options:");
         printBattleInfo();
-        System.out.println("1) Attack \n2) FriendlySpecial \n3) Flee");
+        System.out.println("1) Attack \n2) Use Special \n3) Flee");
     }
 
     private void printBattleInfo() {
@@ -176,7 +179,7 @@ public class BattleManager {
     private void enemyTurn() {
         for (int i = 0; i < enemies.size(); i++) {
             if (random.nextInt(10) + 1 >= enemies.size()) {
-                System.out.println("Enemy " + (i+1) + " hits you for " + enemies.get(i).getPower());
+                System.out.print("Enemy " + (i+1));
                 enemies.get(i).attack(mainCharacter);
             } else {
                 System.out.println("Enemy " + (i+1) + " missed!");
@@ -184,7 +187,7 @@ public class BattleManager {
         }
     }
 
-    private void checkforCharacterDeath(){
+    private void checkForCharacterDeath(){
         if(mainCharacter.getHp() <= 0){
             System.out.println("You have died!! --- GAME OVER");
             System.exit(0);
@@ -202,6 +205,7 @@ public class BattleManager {
         battleState = false;
         System.out.println("\nYOU ARE VICTORIOUS");
         awardExperience();
+        awardGold();
         offerLoot();
     }
 
@@ -223,6 +227,9 @@ public class BattleManager {
 
     private void awardExperience() {
         mainCharacter.addExperience(possibleExperience);
+    }
+    private void awardGold(){
+        mainCharacter.addGold(possibleGold);
     }
 
 }
