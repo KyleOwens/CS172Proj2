@@ -3,6 +3,7 @@ package GameLogic;
 import Characters.MainCharacter;
 import Equipment.Armor;
 import Equipment.Weapon;
+import Saving.Saver;
 import UserInput.UserInput;
 
 public class GameManager {
@@ -14,16 +15,14 @@ public class GameManager {
         this.mainCharacter = MainCharacter.createCharacterWithStats(100, 20);
     }
 
-    public GameManager(MainCharacter mainCharacter, Armor a, Weapon w) {
+    public GameManager(MainCharacter mainCharacter) {
         this.mainCharacter = mainCharacter;
-        this.mainCharacter.setArmor(a);
-        this.mainCharacter.setWeapon(w);
     }
 
     public void startGame() {
         battleManager = new BattleManager(mainCharacter);
 
-        while (menuSelection != 6) {
+        while (menuSelection < 6) {
             printOptions();
             menuSelection = UserInput.getUserInput();
 
@@ -43,8 +42,11 @@ public class GameManager {
                 case 5:
                     openShop();
                     break;
+                case 6:
+                    saveAndClose();
+                    break;
                 default:
-                    if (menuSelection != 6) {
+                    if (menuSelection != 7) {
                         System.out.println("Your selection is invalid, please try again!");
                     }
 
@@ -55,7 +57,7 @@ public class GameManager {
     }
 
     private void printOptions() {
-        System.out.println("\n" + this.mainCharacter + "\n1) Enter Battle \n2) Manage Equipment\n3) Manage Attributes\n4) Print Loot Bag\n5) Shop \n6) Exit");
+        System.out.println("\n" + this.mainCharacter + "\n1) Enter Battle \n2) Manage Equipment\n3) Manage Attributes\n4) Print Loot Bag\n5) Shop\n6) Save and Exit\n7) Exit");
     }
 
     private void beginBattle() {
@@ -153,6 +155,12 @@ public class GameManager {
         System.out.println("1) Replenish MP - 200 Gold");
         System.out.println("2) Replenish HP - 500 Gold");
         System.out.println("3) Exit");
+    }
+
+    private void saveAndClose(){
+        Saver saver = new Saver(mainCharacter);
+        saver.save();
+        saver.close();
     }
 
 }

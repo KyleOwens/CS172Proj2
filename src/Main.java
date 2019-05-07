@@ -1,5 +1,6 @@
+import Characters.MainCharacter;
 import GameLogic.GameManager;
-import Loader.Loader;
+import Saving.Loader;
 
 import java.util.Scanner;
 
@@ -20,7 +21,13 @@ public class Main {
             gameManager = new GameManager();
             gameManager.startGame();
         } else if (menuSelection == 2) {
-            gameManager = new GameManager(loader.loadFile(), loader.getArmor(), loader.getWeapon());
+            MainCharacter mc = loader.loadFile();
+            if(mc != null){
+                gameManager = new GameManager(mc);
+            } else {
+                gameManager = new GameManager();
+            }
+            loader.close();
             gameManager.startGame();
         }
     }

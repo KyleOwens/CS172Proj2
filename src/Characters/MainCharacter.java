@@ -35,16 +35,16 @@ public class MainCharacter extends Character {
         this.random = new Random();
     }
 
-    private MainCharacter(Map<String, Integer> statMap){
+    private MainCharacter(Map<String, Integer> statMap, ArrayList<Equipment> bag){
         this.setHp(statMap.get("HP"));
-        this.setMaxMp(statMap.get("MAXHP"));
+        this.setMaxHp(statMap.get("MAXHP"));
         this.setPower(statMap.get("POWER"));
         this.setDefense(statMap.get("DEFENSE"));
         this.mp = statMap.get("MP");
         this.maxMp = statMap.get("MAXMP");
         this.currentGold = statMap.get("GOLD");
         this.currentAttributes = statMap.get("ATTRIBUTEPOINTS");
-        this.lootBag = new LootBag(5);
+        this.lootBag = new LootBag(5, bag);
         this.random = new Random();
     }
 
@@ -52,8 +52,11 @@ public class MainCharacter extends Character {
         return new MainCharacter(hp, power);
     }
 
-    public static MainCharacter loadCharacterFromFile(Map<String, Integer> statMap){
-        return new MainCharacter(statMap);
+    public static MainCharacter loadCharacterFromFile(Map<String, Integer> statMap, Weapon weapon, Armor armor, ArrayList<Equipment> bag){
+        MainCharacter mc = new MainCharacter(statMap, bag);
+        mc.setArmor(armor);
+        mc.setWeapon(weapon);
+        return mc;
     }
 
     @Override
@@ -210,6 +213,18 @@ public class MainCharacter extends Character {
         return false;
     }
 
+    public int[] getAllStats(){
+        int[] stats = {this.getHp(), this.getMaxHp(), this.getPower(), this.getDefense(), this.mp, this.maxMp,
+                this.experience, this.level, this.currentGold, this.currentAttributes};
+
+        System.out.println(this.getMaxHp());
+        return stats;
+    }
+
+    public ArrayList<Equipment> getItems(){
+        return this.lootBag.items;
+    }
+
     public int getCurrentGold() {
         return currentGold;
     }
@@ -285,6 +300,11 @@ public class MainCharacter extends Character {
         public LootBag(int bagSize) {
             this.slots = bagSize;
             items = new ArrayList();
+        }
+
+        public LootBag(int bagSize, ArrayList<Equipment> bag){
+            this.slots = bagSize;
+            this.items = bag;
         }
 
         public void addItem(Equipment equipment) {
