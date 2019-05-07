@@ -1,6 +1,8 @@
 package GameLogic;
 
 import Characters.MainCharacter;
+import Equipment.Armor;
+import Equipment.Weapon;
 import UserInput.UserInput;
 
 public class GameManager {
@@ -12,8 +14,10 @@ public class GameManager {
         this.mainCharacter = MainCharacter.createCharacterWithStats(100, 20);
     }
 
-    public GameManager(MainCharacter mainCharacter) {
+    public GameManager(MainCharacter mainCharacter, Armor a, Weapon w) {
         this.mainCharacter = mainCharacter;
+        this.mainCharacter.setArmor(a);
+        this.mainCharacter.setWeapon(w);
     }
 
     public void startGame() {

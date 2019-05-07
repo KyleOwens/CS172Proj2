@@ -1,4 +1,5 @@
 import GameLogic.GameManager;
+import Loader.Loader;
 
 import java.util.Scanner;
 
@@ -9,6 +10,7 @@ public class Main {
     public static void main(String[] args) {
         int menuSelection;
         scanner = new Scanner(System.in);
+        Loader loader = new Loader();
 
         printMainMenu();
 
@@ -18,7 +20,8 @@ public class Main {
             gameManager = new GameManager();
             gameManager.startGame();
         } else if (menuSelection == 2) {
-
+            gameManager = new GameManager(loader.loadFile(), loader.getArmor(), loader.getWeapon());
+            gameManager.startGame();
         }
     }
 

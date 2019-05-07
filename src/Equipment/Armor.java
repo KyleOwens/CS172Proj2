@@ -11,8 +11,18 @@ public class Armor extends Equipment {
         this.setLevelRequirement(this.getStat()/5);
     }
 
+    private Armor(int armor, int levelRequirement){
+        this.setItemSlot("Armor");
+        this.setStat(armor);
+        this.setLevelRequirement(levelRequirement);
+    }
+
     public static Armor makeRandomArmor(int maxArmor){
         return new Armor(maxArmor);
+    }
+
+    public static Armor makeArmorWithStats(int armor, int levelRequirement){
+        return new Armor(armor, levelRequirement);
     }
 
 //    public String toString(){

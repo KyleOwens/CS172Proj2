@@ -6,6 +6,7 @@ import Equipment.Weapon;
 import UserInput.UserInput;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 public class MainCharacter extends Character {
@@ -34,8 +35,25 @@ public class MainCharacter extends Character {
         this.random = new Random();
     }
 
+    private MainCharacter(Map<String, Integer> statMap){
+        this.setHp(statMap.get("HP"));
+        this.setMaxMp(statMap.get("MAXHP"));
+        this.setPower(statMap.get("POWER"));
+        this.setDefense(statMap.get("DEFENSE"));
+        this.mp = statMap.get("MP");
+        this.maxMp = statMap.get("MAXMP");
+        this.currentGold = statMap.get("GOLD");
+        this.currentAttributes = statMap.get("ATTRIBUTEPOINTS");
+        this.lootBag = new LootBag(5);
+        this.random = new Random();
+    }
+
     public static MainCharacter createCharacterWithStats(int hp, int power) {
         return new MainCharacter(hp, power);
+    }
+
+    public static MainCharacter loadCharacterFromFile(Map<String, Integer> statMap){
+        return new MainCharacter(statMap);
     }
 
     @Override
@@ -54,26 +72,25 @@ public class MainCharacter extends Character {
         return hit;
     }
 
-    private int rollCriticalHit(int hit){
+    private int rollCriticalHit(int hit) {
         int critical = random.nextInt(10);
 
-        if(critical <=1){
+        if (critical <= 1) {
             hit *= 1.5;
             System.out.println("Critical Hit!");
         }
-
         return hit;
     }
 
-    public void raiseMaxHP(int amount){
+    public void raiseMaxHP(int amount) {
         this.setMaxHp(this.getMaxHp() + amount);
     }
 
-    public void raiseMaxPower(int amount){
+    public void raiseMaxPower(int amount) {
         this.setPower(this.getPower() + amount);
     }
 
-    public void raiseMaxMP(int amount){
+    public void raiseMaxMP(int amount) {
         this.maxMp += amount;
     }
 
@@ -81,7 +98,7 @@ public class MainCharacter extends Character {
         this.currentGold += gold;
     }
 
-    public void lowerAttributePoints(int amount){
+    public void lowerAttributePoints(int amount) {
         this.currentAttributes -= amount;
     }
 
@@ -197,7 +214,7 @@ public class MainCharacter extends Character {
         return currentGold;
     }
 
-    public void subtractGold(int amount){
+    public void subtractGold(int amount) {
         this.currentGold -= amount;
     }
 
@@ -240,7 +257,6 @@ public class MainCharacter extends Character {
     public void setArmor(Armor armor) {
         this.armor = armor;
     }
-
 
     @Override
     public String toString() {
