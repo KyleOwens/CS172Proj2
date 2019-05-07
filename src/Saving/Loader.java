@@ -40,7 +40,6 @@ public class Loader {
             loadEquipment();
             loadBag();
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("The save file could not be loaded! Starting new game.");
             return null;
         }
