@@ -41,6 +41,8 @@ public class MainCharacter extends Character {
         this.setPower(statMap.get("POWER"));
         this.setDefense(statMap.get("DEFENSE"));
         this.mp = statMap.get("MP");
+        this.experience = statMap.get("EXPERIENCE");
+        this.level = statMap.get("LEVEL");
         this.maxMp = statMap.get("MAXMP");
         this.currentGold = statMap.get("GOLD");
         this.currentAttributes = statMap.get("ATTRIBUTEPOINTS");
@@ -217,7 +219,6 @@ public class MainCharacter extends Character {
         int[] stats = {this.getHp(), this.getMaxHp(), this.getPower(), this.getDefense(), this.mp, this.maxMp,
                 this.experience, this.level, this.currentGold, this.currentAttributes};
 
-        System.out.println(this.getMaxHp());
         return stats;
     }
 
